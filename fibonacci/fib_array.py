@@ -1,4 +1,10 @@
 def fib(n):
+    '''
+    computing of desired Fibonacci number:
+    naive - via recursion 
+    better - via massive
+    here is modified massive-version
+    '''
     prev = 0
     cur = 1
     
