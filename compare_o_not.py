@@ -1,6 +1,10 @@
 from sympy import *
 
 def l_rule(t, g, n):
+    '''
+        this function compare two fucntions and 
+        return human readable result to the console
+    '''
     res = str(limit(t/g, n, oo))
     if res == '0':
         return str(t) + ' имеет меньший порядок роста, чем ' + str(g)
@@ -9,6 +13,7 @@ def l_rule(t, g, n):
     else:
         return str(t) + ' имеет тот же порядок роста, что и ' + str(g)
 
+        
 def compare_functions(f1, f2):        
     res = str(limit(f1/f2, n, oo))
     if res == '0':
@@ -18,10 +23,15 @@ def compare_functions(f1, f2):
     else:
         return 0
         
+        
 def rate_functions(funcs):
+    '''
+        sort functions by speed of growth in ascending order.
+        input - array of functions
+        outpu - sorted array of functions
+    '''
     flag = True
     while flag:
-        #print("+-+-+-+-+")
         flag = False
         for i in range(len(funcs)-1):
             if compare_functions(funcs[i], funcs[i+1]) == 1:
@@ -31,7 +41,6 @@ def rate_functions(funcs):
             if i > 0:
                 if compare_functions(funcs[i-1], funcs[i]) == 1:
                     flag = True
-            #print("---{}".format(funcs))        
     return funcs
 
 n = Symbol('n')
@@ -41,7 +50,6 @@ n = Symbol('n')
 }'''
 funcs = [n**(n**0.5), 2**2**n]
 #funcs = [n**0.5, (log(n))**0.5, log(log(n)), log(n), (log(n))**2]
-#funcs = [5, 3, 2, 6, 1, 1, 12 , 2]
 print(funcs)
 print(rate_functions(funcs))
 
