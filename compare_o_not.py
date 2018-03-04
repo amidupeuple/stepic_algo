@@ -48,7 +48,8 @@ n = Symbol('n')
 '''funcs = {
     n**2 : 3 ** log(n)
 }'''
-funcs = [n**(n**0.5), 2**2**n]
+funcs = [(log(n))**log(n), 7**log(n), 2**n, (log(n))**2, n**2, factorial(n), log(factorial(n)), log(log(n)), 2**3*n, 3**log(n),
+	 2**2**n, n**log(n), log(n), n / log(n), 4**n, log(n)**0.5, n**n**0.5, n**0.5]
 #funcs = [n**0.5, (log(n))**0.5, log(log(n)), log(n), (log(n))**2]
 print(funcs)
 print(rate_functions(funcs))
