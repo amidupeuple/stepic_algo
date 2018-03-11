@@ -1,33 +1,41 @@
+class TreeNode:
+	def __init__(self, label, freq):
+		self.label = label
+		self.freq = freq
+		self.left = self.right = self.parent = None
+		
+	def set_parent(self, parent):
+		self.parent = parent
+		
+	def set_left(self, left):
+		self.left = left
+		
+	def set_right(self, right):
+		self.right = right
+
+	def __str__(self):
+		return ("label: {}, freq: {}").format(self.label, self.freq)
+
 storage = []
 
-def pq_insert(a, fa):
-	storage.append((a, fa))
+def print_tree(root):
+	if root.left == None and root.right == None:
+		print(root)
+		return
+	print_tree(root.left)
+	print_tree(root.right)
+
+def pq_insert(x):
+	storage.append(x)
 
 def pq_pop_low_priority():
-	sortedStorage = sorted(storage, key=lambda x: (x[1], x[0]))
+	sortedStorage = sorted(storage, key=lambda x: (x.freq, x.label))
 	minElement = sortedStorage[0]
-	i = 0
-	while len(minElement[0]) > 1:
-		i += 1
-		minElement = sortedStorage[i]
-	storage.remove(minElement)
-	return minElement
-	
-def pq_pop_low_priority_not_leaf():
-	sortedStorage = sorted(storage, key=lambda x: (x[1], x[0]))
-	minElement = sortedStorage[0]
-	i = 0
-	while len(minElement[0]) == 1:
-		i += 1
-		if i >= len(sortedStorage):
-			minElement = sortedStorage[0]
-			break
-		minElement = sortedStorage[i]
 	storage.remove(minElement)
 	return minElement
 
 def pq_contains(c):
-	listOfKeys = [x[0] for x in storage]
+	listOfKeys = [x.label for x in storage]
 	return c in listOfKeys
 
 def build_tree(s):
@@ -36,44 +44,32 @@ def build_tree(s):
 			counter = 0			
 			for x in s:
 				if x == c: counter += 1
-			pq_insert(c, counter)
-	tree = ()
+			pq_insert(TreeNode(c, counter))
+	
 	if len(storage) == 1:
-		min = pq_pop_low_priority()
-		return (min[0], min[1])	
-	min1 = pq_pop_low_priority()	
-	min2 = pq_pop_low_priority()
-	new = ((min2[0]+min1[0]), (min2[1]+min1[1]))
-	pq_insert(new[0], new[1])
-	tree = (min1, min2)	
+		return storage
+	
 	while len(storage) > 1:
 		min1 = pq_pop_low_priority()	
-		min2 = pq_pop_low_priority_not_leaf()
-		new = ((min2[0]+min1[0]), (min2[1]+min1[1]))
-		pq_insert(new[0], new[1])
-		tree = (min1, tree)
-	return tree	
+		min2 = pq_pop_low_priority()
+		new = TreeNode(min1.label+min2.label, min1.freq+min2.freq)
+		new.left = min2
+		new.right = min1
+		min2.parent = new
+		min1.parent = new
+		pq_insert(new)
+	return storage
+
+codes = {}
+def create_dict(root, prefix):	
+	if root.left == None and root.right == None:
+		if prefix == "": prefix = "1"
+		codes[root.label] = prefix
+		return
+	create_dict(root.left, prefix+"1")
+	create_dict(root.right, prefix+"0")
 	
-def create_dict(s, tree):	
-	codes = {}
-	prefix = ""
-	isBottom = False
 	
-	if isinstance(tree[1], int):
-		return {tree[0]: "1"}
-	
-	while True:
-		curNode = tree[0]
-		codes[curNode[0]] = prefix + "0"
-		curNode = tree[1]
-		if isinstance(curNode[1], int):
-			codes[curNode[0]] = prefix + "1"
-			break
-		else:
-			prefix += "1"
-			tree = curNode	
-	return codes
- 
 def encode(s, codes):
 	encoded = ""
 	for c in s:
@@ -82,15 +78,14 @@ def encode(s, codes):
 
 def main():
 	s = input()
-	#s = "yyyyyyyyyyyyyyyeweggggggggggggggfsdddddddddddddfgjwwwwwwwwwwwwwwwwwwwwwwwggggggggggggggggggggdsssssssssssss"
-	tr = build_tree(s)
-	codes = create_dict(s, tr)
-	codes = create_dict(s, tr)
+	build_tree(s)
+	create_dict(storage[0], "")
 	encoded = encode(s, codes)
 	print(len(codes), len(encoded))
 	for k, v in codes.items():
 		print("{}: {}".format(k, v))
 	print(encoded)
+	
 
 if __name__ == "__main__":
 	main()
