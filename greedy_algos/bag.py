@@ -1,18 +1,34 @@
-def get_max_cost(pieces, w):
-	sortedPieces = sorted(pieces, key=lambda p: p[0]/p[1], reverse=True)
-	resultCost = []
+import heapq
+
+def get_max_cost(pieces, capacity):
+	sorted_pieces = sorted(pieces, key=lambda p: p[0]/p[1], reverse=True)
+	result_cost = []
 	i = 0
-	while w and i < len(sortedPieces):
-		if w <= sortedPieces[i][1]:
-			newC = (sortedPieces[i][0]/sortedPieces[i][1]) * w
-			resultCost.append(newC)
-			w = 0
+	while capacity and i < len(sorted_pieces):
+		if capacity <= sorted_pieces[i][1]:
+			new_c = (sorted_pieces[i][0]/sorted_pieces[i][1]) * capacity
+			result_cost.append(new_c)
+			capacity = 0
 		else:
-			resultCost.append(sortedPieces[i][0])			
-			w = w - sortedPieces[i][1]
+			result_cost.append(sorted_pieces[i][0])
+			capacity = capacity - sorted_pieces[i][1]
 		i += 1
-	return sum(resultCost)
-			
+	return sum(result_cost)
+
+
+def fractional_knapsack(capacity, values_and_weights):
+	order = [(-v / w, w) for v, w in values_and_weights]
+	heapq.heapify(order)
+    acc = 0
+    while order and capacity:
+        v_per_w, w = heapq.heappop(order)
+        can_take = min(w, capacity)
+        acc -= v_per_w * can_take
+        capacity -= can_take
+
+    return acc
+
+
 
 def main():
 	n, w = map(int, input().split())
