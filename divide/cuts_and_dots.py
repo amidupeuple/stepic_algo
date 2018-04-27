@@ -1,4 +1,5 @@
 from random import randint
+from bisect import bisect_left, bisect_right
 
 
 def change_elements(arr, i1, i2):
@@ -50,50 +51,32 @@ def quick_sort(arr, l, r, key_ind):
             l = m + o + 1
 
 
-def find_index(arr, l, r, d, side):
-    ind = m = 0
-    while l <= r:
-        m = (l + r) // 2
-        if arr[m][side] == d:
-            ind = m
-            break
-        elif arr[m][side] > d:
-            r = m -1
-        elif arr[m][side] < d:
-            l = m + 1
-
-    if r < 0:
-        ind = r
-    elif l > r:
-        ind = l
-    else:
-        ind = m
-
-    while (ind > 0 and (ind < len(arr))) and arr[ind][side] == d:
-        if side == 0:
-            ind += 1
-        else:
-            ind -= 1
-
-    return ind
+def extract_array(arr, key_ind):
+    res = []
+    for a in arr:
+        res.append(a[key_ind])
+    return res
 
 
 def get_number_of_cuts_for_each_dot(cuts, dots):
     numbs = []
     for d in dots:
-        ind = find_index(cuts, 0, len(cuts) - 1, d, 0)
+        tmp = extract_array(cuts, 0)
+        ind = bisect_right(tmp, d)
 
         new_cuts = cuts[0:ind]
-        quick_sort(new_cuts, 0, ind - 1, 1)
+        # quick_sort(new_cuts, 0, ind - 1, 1)
+        new_cuts.sort(key=lambda tup: tup[1])
+        tmp = extract_array(new_cuts, 1)
 
-        ind2 = find_index(new_cuts, 0, ind - 1, d, 1)
+        ind2 = bisect_left(tmp, d)
 
         if ind2 <= 0:
             c = len(new_cuts)
         elif ind2 > (len(new_cuts) - 1):
             c = 0
         else:
-            c = len(new_cuts) - ind2 - 1
+            c = len(new_cuts) - ind2
 
         numbs.append(c)
     return numbs
@@ -109,7 +92,8 @@ def main():
     # dots = [1, 2, 3, 4, 5, 6]
     # cuts = [(7, 10), (7, 10), (7, 11), (0, 5), (7, 10)]
     # dots = [1, 6, 11]
-    quick_sort(cuts, 0, len(cuts)-1, 0)
+    # quick_sort(cuts, 0, len(cuts)-1, 0)
+    cuts.sort(key=lambda tup: tup[0])
     print(' '.join([str(x) for x in get_number_of_cuts_for_each_dot(cuts, dots)]))
 
 
