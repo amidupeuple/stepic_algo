@@ -7,21 +7,16 @@ def change_elements(arr, i1, i2):
     arr[i2] = tmp
 
 
-def compare_cuts(c1, c2):
-    if c1[0] < c2[0]:
+def compare_cuts(c1, c2, key_ind):
+    if c1[key_ind] < c2[key_ind]:
         return -1
-    elif c1[0] == c2[0]:
-        if c1[1] < c2[1]:
-            return -1
-        elif c1[1] == c2[1]:
-            return 0
-        elif c1[1] > c2[1]:
-            return 1
-    elif c1[0] > c2[0]:
+    elif c1[key_ind] == c2[key_ind]:
+        return 0
+    elif c1[key_ind] > c2[key_ind]:
         return 1
 
 
-def partition(arr, l, r):
+def partition(arr, l, r, key_ind):
     ind = randint(l, r)
     # ind = l
     x = arr[ind]
@@ -29,78 +24,80 @@ def partition(arr, l, r):
 
     j = l
     for i in range(l+1, r+1):
-        if compare_cuts(arr[i], x) <= 0:
+        if compare_cuts(arr[i], x, key_ind) <= 0:
             j += 1
             change_elements(arr, j, i)
     change_elements(arr, l, j)
     return j
 
 
-def quick_sort(arr, l, r):
+def quick_sort(arr, l, r, key_ind):
     while l < r:
-        m = partition(arr, l, r)
+        m = partition(arr, l, r, key_ind)
         if m > ((l + r) / 2):
-            quick_sort(arr, m + 1, r)
+            quick_sort(arr, m + 1, r, key_ind)
             r = m - 1
         else:
-            quick_sort(arr, l, m - 1)
+            quick_sort(arr, l, m - 1, key_ind)
             l = m + 1
+
+
+def find_index(arr, l, r, d, side):
+    ind = m = 0
+    while l <= r:
+        m = (l + r) // 2
+        if arr[m][side] == d:
+            ind = m
+            break
+        elif arr[m][side] > d:
+            r = m -1
+        elif arr[m][side] < d:
+            l = m + 1
+
+    if r < 0:
+        ind = r
+    elif l > r:
+        ind = l
+    else:
+        ind = m
+
+    while (ind > 0 and (ind < len(arr))) and arr[ind][side] == d:
+        if side == 0:
+            ind += 1
+        else:
+            ind -= 1
+
+    if ind == -1:
+        ind = 0
+
+    return ind
 
 
 def get_number_of_cuts_for_each_dot(cuts, dots):
     numbs = []
     for d in dots:
-        ind = len(cuts)
-        l = 0
-        r = len(cuts) - 1
-        while l <= r:
-            m = (l + r) // 2
-            if cuts[m][0] == d:
-                ind = m
-                break
-            elif cuts[m][0] > d:
-                r = m -1
-            elif cuts[m][0] < d:
-                l = m + 1
-        ind = m
-        while cuts[ind][0] == d:
-            ind += 1
+        ind = find_index(cuts, 0, len(cuts) - 1, d, 0)
 
-        l = 0
-        r = ind - 1
-        ind2 = 0
-        while l <= r:
-            m = (l + r) // 2
-            if cuts[m][1] == d:
-                ind2 = m
-                break
-            elif cuts[m][1] > d:
-                r = m -1
-            elif cuts[m][1] < d:
-                l = m + 1
+        new_cuts = cuts[0:ind]
+        quick_sort(new_cuts, 0, ind - 1, 1)
 
-        while cuts[ind2][1] == d:
-            ind2 -= 1
+        ind2 = find_index(new_cuts, 0, ind - 1, d, 1)
 
-        c = ind - ind2 - 1
+        c = len(new_cuts) - ind2
 
         numbs.append(c)
     return numbs
 
 
 def main():
-    # n, m = [int(x) for x in input().split(' ')]
-    # cuts = []
-    # for i in range(n):
-    #     cuts.append([int(x) for x in input().split(' ')])
-    # dots = [int(x) for x in input().split(' ')]
-    # n = 2
-    # m = 3
-    cuts = [(0, 5), (7, 10), (0, 1), (1, 3), (7, 11)]
-    dots = [1, 6, 11]
-    quick_sort(cuts, 0, len(cuts)-1)
-    # print(cuts)
-    # print(dots)
+    n, m = [int(x) for x in input().split(' ')]
+    cuts = []
+    for i in range(n):
+        cuts.append([int(x) for x in input().split(' ')])
+    dots = [int(x) for x in input().split(' ')]
+    # cuts = [(0, 5), (7, 10), (7, 11)]
+    # dots = [1, 6, 11]
+    quick_sort(cuts, 0, len(cuts)-1, 0)
     print(' '.join([str(x) for x in get_number_of_cuts_for_each_dot(cuts, dots)]))
 
 
