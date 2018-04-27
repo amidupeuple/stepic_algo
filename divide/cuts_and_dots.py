@@ -23,23 +23,28 @@ def partition(arr, l, r, key_ind):
     change_elements(arr, l, ind)
 
     j = l
+    offset = 0
     for i in range(l+1, r+1):
-        if compare_cuts(arr[i], x, key_ind) <= 0:
+        if compare_cuts(arr[i], x, key_ind) < 0:
             j += 1
             change_elements(arr, j, i)
+        elif compare_cuts(arr[i], x, key_ind) == 0:
+            offset += 1
+            change_elements(arr, j + offset, i)
+
     change_elements(arr, l, j)
-    return j
+    return j, offset
 
 
 def quick_sort(arr, l, r, key_ind):
     while l < r:
-        m = partition(arr, l, r, key_ind)
-        if m > ((l + r) / 2):
-            quick_sort(arr, m + 1, r, key_ind)
+        m, o = partition(arr, l, r, key_ind)
+        if m - l > r - o:
+            quick_sort(arr, o + 1, r, key_ind)
             r = m - 1
         else:
             quick_sort(arr, l, m - 1, key_ind)
-            l = m + 1
+            l = o + 1
 
 
 def find_index(arr, l, r, d, side):
@@ -90,13 +95,13 @@ def get_number_of_cuts_for_each_dot(cuts, dots):
 
 
 def main():
-    n, m = [int(x) for x in input().split(' ')]
-    cuts = []
-    for i in range(n):
-        cuts.append([int(x) for x in input().split(' ')])
-    dots = [int(x) for x in input().split(' ')]
-    # cuts = [(0, 5), (7, 10), (7, 11)]
-    # dots = [1, 6, 11]
+    # n, m = [int(x) for x in input().split(' ')]
+    # cuts = []
+    # for i in range(n):
+    #     cuts.append([int(x) for x in input().split(' ')])
+    # dots = [int(x) for x in input().split(' ')]
+    cuts = [(7, 10), (7, 10), (7, 11), (0, 5), (7, 10)]
+    dots = [1, 6, 11]
     quick_sort(cuts, 0, len(cuts)-1, 0)
     print(' '.join([str(x) for x in get_number_of_cuts_for_each_dot(cuts, dots)]))
 
