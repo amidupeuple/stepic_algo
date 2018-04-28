@@ -134,22 +134,22 @@ def get_number_of_cuts_for_each_dot_old(cuts, dots):
 
 def main():
     sizes = [10, 50, 100, 200, 500, 1000]
-    test(sizes)
+    test(sizes, 0, 20)
 
 
-def test(sizes):
+def test(sizes, mi, ma):
     for s in sizes:
         print("size: {}".format(s))
         cuts = []
         dots = []
         for i in range(s):
-            x1 = randint(-100000000, 100000000)
-            x2 = randint(-100000000, 100000000)
+            x1 = randint(mi, ma)
+            x2 = randint(mi, ma)
             while x2 < x1:
-                x2 = randint(-100000000, 100000000)
+                x2 = randint(mi, ma)
             cuts.append((x1, x2))
         for i in range(s):
-            x = randint(-100000000, 100000000)
+            x = randint(mi, ma)
             dots.append(x)
 
         t0 = time.perf_counter()
