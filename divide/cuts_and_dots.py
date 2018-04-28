@@ -77,5 +77,31 @@ def main():
     print(' '.join([str(x) for x in get_number_of_cuts_for_each_dot(cuts_left, cuts_right, dots)]))
 
 
+def from_stepik():
+    n, m = [int(x) for x in input().split()]
+    a = []
+    for i in range(0, n):
+        l, r = [int(x) for x in input().split()]
+        a.append([l, -1])
+        a.append([r, 1])
+
+    p = [int(x) for x in input().split()]
+    for i in range(m):
+        a.append([p[i], 0, i])
+
+    a.sort()
+    res = [0] * m
+    curr = 0
+    for i in range(len(a)):
+        if a[i][1] == 1:
+            curr += -1
+        if a[i][1] == -1:
+            curr -= -1
+        if a[i][1] == 0:
+            res[a[i][2]] = curr
+
+    print(*res)
+
+
 if __name__ == "__main__":
-    main()
+    from_stepik()
