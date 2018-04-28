@@ -87,6 +87,21 @@ def extract_array(arr, key_ind):
     return res
 
 
+def get_number_of_cuts_for_each_dot_v2(cuts_left, cuts_right, dots):
+    numbs = []
+    for d in dots:
+        tmp = extract_array(cuts_left, 0)
+        ind1 = bisect_right(tmp, d)
+
+        tmp = extract_array(cuts_right, 1)
+        ind2 = bisect_left(tmp, d)
+
+        arr_c = list(filter(lambda x: x in cuts_left[:ind1], cuts_right[ind2:]))
+
+        numbs.append(len(arr_c))
+    return numbs
+
+
 def get_number_of_cuts_for_each_dot(cuts, dots):
     numbs = []
     for d in dots:
@@ -153,11 +168,13 @@ def test(sizes, mi, ma):
             dots.append(x)
 
         t0 = time.perf_counter()
-        cuts1 = cuts[:]
-        quick_sort(cuts1, 0, len(cuts1)-1, 0)
-        res1 = get_number_of_cuts_for_each_dot_old(cuts1, dots)
+        cuts_left = cuts[:]
+        cuts_right = cuts[:]
+        cuts_left.sort(key=lambda tup: tup[0])
+        cuts_right.sort(key=lambda tup: tup[1])
+        res1 = get_number_of_cuts_for_each_dot_v2(cuts_left, cuts_right, dots)
         t1 = time.perf_counter()
-        print("Old finished: {0:.7f}".format((t1 - t0)))
+        print("v2 finished: {0:.7f}".format((t1 - t0)))
 
         t0 = time.perf_counter()
         cuts2 = cuts[:]
