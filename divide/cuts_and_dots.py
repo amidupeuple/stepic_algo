@@ -1,5 +1,6 @@
 from random import randint
 from bisect import bisect_left, bisect_right
+import time
 
 
 def change_elements(arr, i1, i2):
@@ -51,6 +52,34 @@ def quick_sort(arr, l, r, key_ind):
             l = m + o + 1
 
 
+def find_index(arr, l, r, d, side):
+    ind = m = 0
+    while l <= r:
+        m = (l + r) // 2
+        if arr[m][side] == d:
+            ind = m
+            break
+        elif arr[m][side] > d:
+            r = m -1
+        elif arr[m][side] < d:
+            l = m + 1
+
+    if r < 0:
+        ind = r
+    elif l > r:
+        ind = l
+    else:
+        ind = m
+
+    while (ind > 0 and (ind < len(arr))) and arr[ind][side] == d:
+        if side == 0:
+            ind += 1
+        else:
+            ind -= 1
+
+    return ind
+
+
 def extract_array(arr, key_ind):
     res = []
     for a in arr:
@@ -82,19 +111,64 @@ def get_number_of_cuts_for_each_dot(cuts, dots):
     return numbs
 
 
+def get_number_of_cuts_for_each_dot_old(cuts, dots):
+    numbs = []
+    for d in dots:
+        ind = find_index(cuts, 0, len(cuts) - 1, d, 0)
+
+        new_cuts = cuts[0:ind]
+        quick_sort(new_cuts, 0, ind - 1, 1)
+
+        ind2 = find_index(new_cuts, 0, ind - 1, d, 1)
+
+        if ind2 <= 0:
+            c = len(new_cuts)
+        elif ind2 > (len(new_cuts) - 1):
+            c = 0
+        else:
+            c = len(new_cuts) - ind2 - 1
+
+        numbs.append(c)
+    return numbs
+
+
 def main():
-    n, m = [int(x) for x in input().split(' ')]
-    cuts = []
-    for i in range(n):
-        cuts.append([int(x) for x in input().split(' ')])
-    dots = [int(x) for x in input().split(' ')]
-    # cuts = [(6, 6), (0, 3), (1, 3), (2, 3), (3, 4), (3, 5), (3, 6)]
-    # dots = [1, 2, 3, 4, 5, 6]
-    # cuts = [(7, 10), (7, 10), (7, 11), (0, 5), (7, 10)]
-    # dots = [1, 6, 11]
-    # quick_sort(cuts, 0, len(cuts)-1, 0)
-    cuts.sort(key=lambda tup: tup[0])
-    print(' '.join([str(x) for x in get_number_of_cuts_for_each_dot(cuts, dots)]))
+    sizes = [10, 50, 100, 200, 500, 1000]
+    test(sizes)
+
+
+def test(sizes):
+    for s in sizes:
+        print("size: {}".format(s))
+        cuts = []
+        dots = []
+        for i in range(s):
+            x1 = randint(-100000000, 100000000)
+            x2 = randint(-100000000, 100000000)
+            while x2 < x1:
+                x2 = randint(-100000000, 100000000)
+            cuts.append((x1, x2))
+        for i in range(s):
+            x = randint(-100000000, 100000000)
+            dots.append(x)
+
+        t0 = time.perf_counter()
+        cuts1 = cuts[:]
+        quick_sort(cuts1, 0, len(cuts1)-1, 0)
+        res1 = get_number_of_cuts_for_each_dot_old(cuts1, dots)
+        t1 = time.perf_counter()
+        print("Old finished: {0:.7f}".format((t1 - t0)))
+
+        t0 = time.perf_counter()
+        cuts2 = cuts[:]
+        cuts2.sort(key=lambda tup: tup[0])
+        res2 = get_number_of_cuts_for_each_dot(cuts2, dots)
+        t1 = time.perf_counter()
+        print("New finished: {0:.7f}".format((t1 - t0)))
+        print("Results are matched?: {}".format((res1 == res2)))
+        print(res1[:100])
+        print(res2[:100])
+        print('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
 
 
 if __name__ == "__main__":
