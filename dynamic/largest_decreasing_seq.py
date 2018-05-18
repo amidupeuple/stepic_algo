@@ -1,4 +1,17 @@
 from bisect import bisect_left
+from random import randint
+
+
+def test(length, m, func):
+    t = []
+    for i in range(length):
+        t.append(randint(1, m))
+    n, r = func(t)
+    print('a = ' + (' '.join([str(x + 1) for x in t])))
+    print('n = ' + str(n))
+    print('i = ' + (' '.join([str(x + 1) for x in r])))
+    print('--------------------------------------------')
+
 
 def test_lds():
     n, a = lds([1])
@@ -111,4 +124,5 @@ def main():
 if __name__ == "__main__":
     # test_lds()
     # test_find_pos()
-    main()
+    # main()
+    test(10, 10, lds)
