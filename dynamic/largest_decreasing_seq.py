@@ -2,15 +2,49 @@ from bisect import bisect_left
 from random import randint
 
 
-def test(length, m, func):
+def lds_not(arr):
+    D = [1 for i in range(len(arr))]
+    for i in range(1, len(arr)):
+        for j in range(i):
+            if arr[i] <= arr[j] and (D[j] + 1) > D[i]:
+                D[i] = D[j] + 1
+
+    m = 0
+    mi = 0
+    for i in range(len(D)):
+        if D[i] > m:
+            m = D[i]
+            mi = i
+
+    s = m
+    mval = 0
+    if arr:
+        mval = arr[mi]
+    res = []
+    for i in reversed(range(mi+1)):
+        if len(res) == s:
+            break
+        if D[i] == m and arr[i] >= mval:
+            res.append(i+1)
+            m -= 1
+    res.reverse()
+    return s, res
+
+
+def test(length, m, func1, func2):
     t = []
     for i in range(length):
         t.append(randint(1, m))
-    n, r = func(t)
-    print('a = ' + (' '.join([str(x + 1) for x in t])))
+    n, r = func1(t)
+    print('a = ' + (' '.join([str(x) for x in t])))
     print('n = ' + str(n))
     print('i = ' + (' '.join([str(x + 1) for x in r])))
     print('--------------------------------------------')
+    n, r = func2(t)
+    print('a = ' + (' '.join([str(x) for x in t])))
+    print('n = ' + str(n))
+    print('i = ' + (' '.join([str(x) for x in r])))
+    print('============================================')
 
 
 def test_lds():
@@ -125,4 +159,5 @@ if __name__ == "__main__":
     # test_lds()
     # test_find_pos()
     # main()
-    test(10, 10, lds)
+    test(10, 10, lds, lds_not)
+
